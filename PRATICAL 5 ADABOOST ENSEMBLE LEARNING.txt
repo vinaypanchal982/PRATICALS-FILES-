@@ -1,0 +1,32 @@
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# Load dataset
+data = load_breast_cancer()
+X = data.data
+y = data.target
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Weak classifier: Decision stump (1-level decision tree)
+weak_classifier = DecisionTreeClassifier(max_depth=5)
+
+# Train AdaBoost model with 50 weak classifiers
+adaboost_model = AdaBoostClassifier(estimator=weak_classifier, n_estimators=50, random_state=42)
+adaboost_model.fit(X_train, y_train)
+
+# Predict and evaluate AdaBoost
+y_pred = adaboost_model.predict(X_test)
+accuracy_ada = accuracy_score(y_test, y_pred)
+print(f"AdaBoost Accuracy: {accuracy_ada * 100:.2f}%")
+print("\nClassification Report (AdaBoost):\n", classification_report(y_test, y_pred))
+
+# Compare with a single weak classifier
+weak_classifier.fit(X_train, y_train)
+y_pred_weak = weak_classifier.predict(X_test)
+accuracy_weak = accuracy_score(y_test, y_pred_weak)
+print(f"\nSingle Weak Classifier Accuracy: {accuracy_weak * 100:.2f}%")

@@ -1,0 +1,54 @@
+from collections import deque, defaultdict
+
+class Graph:
+    def __init__(self):
+        self.graph = defaultdict(list)
+
+    def add_edge(self, u, v):
+        # For undirected graph
+        self.graph[u].append(v)
+        self.graph[v].append(u)
+
+    def bfs(self, start):
+        visited = set()
+        queue = deque([start])
+        traversal = []
+
+        while queue:
+            node = queue.popleft()
+            if node not in visited:
+                visited.add(node)
+                traversal.append(node)
+                for neighbor in self.graph[node]:
+                    queue.append(neighbor)
+        return traversal
+
+    def dfs_iterative(self, start):
+        visited = set()
+        stack = [start]
+        traversal = []
+
+        while stack:
+            node = stack.pop()
+            if node not in visited:
+                visited.add(node)
+                traversal.append(node)
+                for neighbor in reversed(self.graph[node]):
+                    stack.append(neighbor)
+        return traversal
+
+# Create graph and add edges
+g = Graph()
+edges = [
+    ('A', 'B'), ('A', 'C'),
+    ('B', 'D'), ('B', 'E'),
+    ('C', 'F'), ('E', 'G'), ('F', 'H')
+]
+
+for u, v in edges:
+    g.add_edge(u, v)
+
+# Start traversal
+start_node = 'A'
+print("DFS Traversal: ", g.dfs_iterative(start_node))
+print("BFS Traversal: ", g.bfs(start_node))

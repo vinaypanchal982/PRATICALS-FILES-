@@ -1,0 +1,78 @@
+import heapq
+
+def a_star(graph, h, start, goal):
+    open_list = []
+    heapq.heappush(open_list, (h[start], 0, start, [start]))
+    visited = set()
+
+    while open_list:
+        f, g, node, path = heapq.heappop(open_list)
+        if node == goal:
+            return path, g
+        visited.add(node)
+        for neighbor, cost in graph[node]:
+            if neighbor not in visited:
+                g_new = g + cost
+                f_new = g_new + h[neighbor]
+                heapq.heappush(open_list, (f_new, g_new, neighbor, path + [neighbor]))
+    return None, float('inf')
+
+
+def rbfs(graph, h, start, goal):
+    def rbfs_helper(node, path, g, f_limit):
+        if node == goal:
+            return path, g
+
+        successors = []
+        for neighbor, cost in graph[node]:
+            if neighbor not in path:
+                g_new = g + cost
+                f = max(g_new + h[neighbor], f_limit)
+                successors.append((f, neighbor, g_new, path + [neighbor]))
+
+        if not successors:
+            return None, float('inf')
+
+        successors.sort()
+        while successors:
+            best = successors[0]
+            alternative = successors[1][0] if len(successors) > 1 else float('inf')
+            result, f_new = rbfs_helper(best[1], best[3], best[2], min(f_limit, alternative))
+            if result is not None:
+                return result, f_new
+            successors[0] = (f_new, best[1], best[2], best[3])
+            successors.sort()
+
+        return None, float('inf')
+
+    return rbfs_helper(start, [start], 0, float('inf'))
+
+
+# Graph and heuristic definitions
+graph = {
+    'A': [('B', 5), ('C', 10)],
+    'B': [('A', 5), ('D', 4), ('E', 3)],
+    'C': [('A', 10), ('G', 2)],
+    'D': [('B', 4), ('E', 6)],
+    'E': [('B', 3), ('D', 6), ('G', 2)],
+    'G': [('C', 2), ('E', 2)]
+}
+
+heuristic = {
+    'A': 7,
+    'B': 6,
+    'C': 4,
+    'D': 3,
+    'E': 2,
+    'G': 0
+}
+
+# Run A*
+start = 'A'
+goal = 'G'
+a_path, a_cost = a_star(graph, heuristic, start, goal)
+print("A* Path:", a_path, "Cost:", a_cost)
+
+# Run RBFS
+rbfs_path, rbfs_cost = rbfs(graph, heuristic, start, goal)
+print("RBFS Path:", rbfs_path, "Cost:", rbfs_cost)

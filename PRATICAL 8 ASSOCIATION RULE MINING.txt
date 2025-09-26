@@ -1,0 +1,29 @@
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+
+# Sample market basket dataset
+dataset = [
+    ['milk', 'bread', 'butter'],
+    ['bread', 'butter'],
+    ['milk', 'bread'],
+    ['milk', 'butter'],
+    ['bread'],
+    ['milk', 'bread', 'butter'],
+    ['butter']
+]
+
+# Convert to one-hot encoded DataFrame
+te = TransactionEncoder()
+te_ary = te.fit(dataset).transform(dataset)
+df = pd.DataFrame(te_ary, columns=te.columns_)
+
+# 1. Find frequent itemsets with min support of 0.3
+frequent_itemsets = apriori(df, min_support=0.3, use_colnames=True)
+
+# 2. Generate rules with min confidence of 0.7
+rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.7)
+
+# Display results
+print("Frequent Itemsets:\n", frequent_itemsets)
+print("\nAssociation Rules:\n", rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
