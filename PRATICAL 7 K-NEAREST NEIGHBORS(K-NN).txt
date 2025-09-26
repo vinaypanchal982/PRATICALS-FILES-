@@ -9,7 +9,7 @@ data = load_iris()
 X = data.data
 y = data.target
 class_names = data.target_names
-ss
+
 # Train-test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -30,4 +30,3 @@ accuracy = accuracy_score(y_test, y_pred)
 print(f"Accuracy: {accuracy * 100:.2f}%")
 print("\nClassification Report:\n", classification_report(y_test, y_pred, target_names=class_names))
 print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
-sss
